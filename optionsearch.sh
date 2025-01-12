@@ -99,7 +99,9 @@ elif [ "$1" == "hm" ] || [ "$1" == "home-manager" ]; then
       JSON_DRV=$(nix build --no-link --print-out-paths home-manager\#docs-json)
       OPTIONS_JSON=$JSON_DRV/share/doc/home-manager/options.json $OPTIONSEARCH
 elif [ "$1" == "nixos" ]; then
-      JSON_DRV=$(nix-build '<nixpkgs/nixos/release.nix>' -A options --no-out-link)
+      JSON_DRV=$(nix build --no-link --print-out-paths --impure \
+          --expr 'builtins.toPath ((import (builtins.getFlake "nixpkgs" + /nixos/release.nix) {}).options)')
+          # ^ better way to do this?
       OPTIONS_JSON=$JSON_DRV/share/doc/nixos/options.json $OPTIONSEARCH
 elif [ "$1" == "devenv" ]; then
       JSON_DRV=$(yes "N" | nix build --no-link --print-out-paths github:cachix/devenv/v1.0.8\#devenv-docs-options-json)
